@@ -7,11 +7,10 @@ var Q = require('q');
 
 // Instantiation
 var newsapi = new NewsAPI(config.newsapi.key);
+var MAX_SOURCES_RAIDED = 3;
 
 // Create Q Spawn Environment
-// var deferred = Q.defer();
 Q.spawn(function*(){
-
 
     function getSourceList() {
         var deferred = Q.defer();
@@ -21,6 +20,7 @@ Q.spawn(function*(){
             for(var i=0;i<res.sources.length;i++){
                 result.push(res.sources[i].id);
             }
+            console.log(result.length);
             return result;
         }).then(res => {
             deferred.resolve(res);
@@ -38,18 +38,19 @@ Q.spawn(function*(){
         return deferred.promise;        
     }
 
+    
     async function raid() {
         var source_list = await getSourceList();
         console.log(source_list);
-
-        for(var i=0;i<3;i++){
+    
+        for(var i=0;i<MAX_SOURCES_RAIDED;i++){
             var articles = await getArticlesBySource(source_list[i]);
             console.log(articles);
         }
     }
-
     
     raid();
-    
+        
 
 });
+
